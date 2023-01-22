@@ -4,11 +4,13 @@ Chrome extension to open lambda console and logs page directly
 # How to use
 - On chrome browser, drag the name of lambda function.
   - Anywhere in the chrome browser (ex. in gmail page)
-  - Not ARN.
+  - Note ARN.
 - Right click the drag section, and select Open Lambda Page -> Lambda Console or Lambda Logs
   - Lambda Console: Code page
   - Lambda Logs   : Log streams page
-- If the
+- If the dragged string is not valid. Just the entrance page of Lambda and Logs will open.
+
+![](img/20230122195024.png)
 
 # Note
 - Region is hard coded as ap-northeast-1 in background.js. You can change 2 of the values.
