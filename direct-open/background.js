@@ -2,7 +2,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
 
 	const parent = chrome.contextMenus.create({
 		id: "share",
-		title: "Open Lambda",
+		title: "Open Lambda Page",
 		contexts: ["all"],
 	});
 
