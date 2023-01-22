@@ -10,7 +10,7 @@ Chrome extension to open lambda console and logs page directly
   - Lambda Logs   : Log streams page
 - If the dragged string is not valid. Just the entrance page of Lambda and Logs will open.
 
-![](img/20230122195024.png)
+![](img/20230122195412.png)
 
 # Note
 - Region is hard coded as ap-northeast-1 in background.js. You can change 2 of the values.
