@@ -1,0 +1,18 @@
+{
+	"name": "λ direct open console/logs",
+	"description": "Drag a lambda function name and right click menu. You can open the console or logs page directly.",
+	"version": "1.0",
+	"manifest_version": 3,
+	"permissions": [
+		"activeTab",
+		"scripting",
+		"tabs",
+		"contextMenus"
+	],
+	"action": {
+		"default_title": "λ direct open console/logs"
+	},
+	"background": {
+		"service_worker": "background.js"
+	}
+}
