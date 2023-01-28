@@ -29,12 +29,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 			chrome.scripting.executeScript(
 				{
 					target: { tabId: tab.id },
-					function: lambda_console,
-					args: [info]
+					function: gen_lambda_url,
+					args: [info, "lambda_console"]
 				},
 				(injectionResults) => {
 					target_url = injectionResults[0].result;
-					console.log(target_url);
 					chrome.tabs.create({ url: target_url });
 				}
 			);
@@ -43,12 +42,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 			chrome.scripting.executeScript(
 				{
 					target: { tabId: tab.id },
-					function: lambda_logs,
-					args: [info]
+					function: gen_lambda_url,
+					args: [info, "lambda_logs"]
 				},
 				(injectionResults) => {
 					target_url = injectionResults[0].result;
-					console.log(target_url);
 					chrome.tabs.create({ url: target_url });
 				}
 			);
@@ -56,16 +54,19 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 	}
 });
 
-function lambda_console(info) {
-	const fn_name = info.selectionText;
-	const region = 'ap-northeast-1';
-	lambda_console_url = `https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/functions/${fn_name}?tab=code`;
-	return lambda_console_url;
-}
+async function gen_lambda_url(info, type) {
+	console.log(type);
 
-function lambda_logs(info) {
+	await chrome.storage.local.get(["key"]).then((result) => {
+		console.log("Value currently is " + result.key);
+		region = result.key;
+	});
+
 	const fn_name = info.selectionText;
-	const region = 'ap-northeast-1';
-	lambda_logs_url = `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logStream:group=%252Faws%252Flambda%252F${fn_name}`;
-	return lambda_logs_url;
+
+	if (type === 'lambda_console') {
+		return `https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/functions/${fn_name}?tab=code`;
+	} else if (type === 'lambda_logs') {
+		return `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logStream:group=%252Faws%252Flambda%252F${fn_name}`;
+	}
 }

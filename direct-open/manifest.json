@@ -7,8 +7,10 @@
 		"activeTab",
 		"scripting",
 		"tabs",
-		"contextMenus"
+		"contextMenus",
+		"storage"
 	],
+	"options_page": "options.html",
 	"action": {
 		"default_title": "λ direct open console/logs"
 	},
