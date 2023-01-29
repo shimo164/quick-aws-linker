@@ -9,6 +9,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
     parentId: parent,
     id: 'lambda-console',
     title: 'Lambda Console',
+    contexts: ['page'],
     contexts: ['selection'],
   });
 
@@ -17,6 +18,13 @@ chrome.runtime.onInstalled.addListener(function (details) {
     id: 'lambda-logs',
     title: 'Lambda Logs',
     contexts: ['selection'],
+  });
+
+  chrome.contextMenus.create({
+    parentId: parent,
+    id: 'options',
+    title: 'Options',
+    contexts: ['all'],
   });
 });
 
@@ -27,6 +35,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       break;
     case 'lambda-logs':
       menu_action(info, tab, 'lambda_logs');
+      break;
+    case 'options':
+      chrome.runtime.openOptionsPage();
       break;
   }
 });
@@ -47,7 +58,6 @@ function menu_action(info, tab, action) {
 
 async function gen_lambda_url(info, action) {
   await chrome.storage.local.get(['key']).then((result) => {
-    console.log('Value currently is ' + result.key);
     region = result.key;
   });
 
