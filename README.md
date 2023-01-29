@@ -7,6 +7,7 @@ Chrome extension to open lambda console and logs page directly with the dragged 
 ## Setting
 
 - Set your region from the Options page (right click the icon).
+  ![](img/20230129203223.png)
 
 ## Drag function name
 
@@ -23,7 +24,9 @@ Chrome extension to open lambda console and logs page directly with the dragged 
 ## Use Clipboard
 
 - Open Option page (from menu or from right click icon)
-- Enter function name directly and select button
+- Enter function name directly and select the button
+
+![](img/20230129203411.png)
 
 # How to install
 
