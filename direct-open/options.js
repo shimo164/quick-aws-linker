@@ -15,6 +15,12 @@ function removeOptions(selectElement) {
   }
 }
 
+function spliceArray(array, index) {
+  if (array.length !== 0 && index !== -1) {
+    array.splice(index, 1);
+  }
+}
+
 function loadRegion() {
   chrome.storage.local.get('region', (items) => {
     const savedRegion = items.region;
@@ -45,9 +51,7 @@ function loadFunctionHistory() {
 
     // Delete '' if exists
     const index = options.indexOf('');
-    if (options.length !== 0 && index !== -1) {
-      options.splice(index, 1);
-    }
+    spliceArray(options, index);
 
     // Set select options
     for (let i = 0; i < options.length; i += 1) {
@@ -94,7 +98,8 @@ function deleteOneFunctionHistory() {
     // Delete selected from storage
     chrome.storage.local.get('fnNames', (items) => {
       const savedFnNames = items.fnNames;
-      savedFnNames.splice(index, 1);
+      spliceArray(savedFnNames, index);
+
       chrome.storage.local.set({ fnNames: savedFnNames });
     });
   }
