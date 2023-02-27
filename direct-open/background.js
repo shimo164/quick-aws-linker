@@ -29,8 +29,8 @@ chrome.runtime.onInstalled.addListener(() => {
 
 async function genLambdaUrl(info, action) {
   const region = await chrome.storage.local
-    .get(['key'])
-    .then((result) => result.key);
+    .get(['region'])
+    .then((result) => result.region);
 
   const fnName = info.selectionText;
 
