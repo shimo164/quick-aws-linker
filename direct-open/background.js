@@ -1,3 +1,6 @@
+import { genLambdaUrlFromSelection } from './scripts/url.mjs';
+import { saveFunctionHistoryMenuSelect } from './scripts/history.mjs';
+
 chrome.runtime.onInstalled.addListener(() => {
   const parent = chrome.contextMenus.create({
     id: 'share',
@@ -27,43 +30,19 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-async function genLambdaUrl(info, action) {
-  const region = await chrome.storage.local
-    .get(['region'])
-    .then((result) => result.region);
-
-  const fnName = info.selectionText;
-
-  let targetUrl = '';
-  if (action === 'lambda_console') {
-    targetUrl = `https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/functions/${fnName}?tab=code`;
-  } else if (action === 'lambda_logs') {
-    targetUrl = `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logStream:group=%252Faws%252Flambda%252F${fnName}`;
-  }
-  return targetUrl;
+async function menuAction(info, tab, action) {
+  const { targetUrl, fnName } = await genLambdaUrlFromSelection(info, action);
+  saveFunctionHistoryMenuSelect(fnName);
+  chrome.tabs.create({ url: targetUrl });
 }
 
-function menuAction(info, tab, action) {
-  chrome.scripting.executeScript(
-    {
-      target: { tabId: tab.id },
-      function: genLambdaUrl,
-      args: [info, action],
-    },
-    (injectionResults) => {
-      const targetUrl = injectionResults[0].result;
-      chrome.tabs.create({ url: targetUrl });
-    },
-  );
-}
-
-chrome.contextMenus.onClicked.addListener((info, tab) => {
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   switch (info.menuItemId) {
     case 'lambda-console':
-      menuAction(info, tab, 'lambda_console');
+      await menuAction(info, tab, 'lambda_console');
       break;
     case 'lambda-logs':
-      menuAction(info, tab, 'lambda_logs');
+      await menuAction(info, tab, 'lambda_logs');
       break;
     case 'options':
       chrome.runtime.openOptionsPage();
