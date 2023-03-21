@@ -1,19 +1,5 @@
-/* eslint-disable no-alert */
-/* eslint-disable no-restricted-globals */
-/* eslint-disable no-param-reassign */
-
-function swap(array, i1, i2) {
-  [array[i1], array[i2]] = [array[i2], array[i1]];
-  return array;
-}
-
-function removeOptions(selectElement) {
-  let i;
-  const L = selectElement.options.length - 1;
-  for (i = L; i >= 0; i -= 1) {
-    selectElement.remove(i);
-  }
-}
+import { swap, removeOptions, spliceArray } from './scripts/util.mjs';
+import { generateTargetUrl } from './scripts/url.mjs';
 
 function loadRegion() {
   chrome.storage.local.get('region', (items) => {
@@ -38,6 +24,9 @@ function saveRegion() {
 function loadFunctionHistory() {
   chrome.storage.local.get('fnNames', (items) => {
     const options = items.fnNames;
+    if (options === '' || options === undefined) {
+      return;
+    }
 
     // Clear options before overwrite
     const select = document.getElementById('selectFunction');
@@ -45,9 +34,7 @@ function loadFunctionHistory() {
 
     // Delete '' if exists
     const index = options.indexOf('');
-    if (options.length !== 0 && index !== -1) {
-      options.splice(index, 1);
-    }
+    spliceArray(options, index);
 
     // Set select options
     for (let i = 0; i < options.length; i += 1) {
@@ -64,8 +51,8 @@ function saveFunctionHistory(fnName) {
   chrome.storage.local.get('fnNames', (items) => {
     const savedFnNames = items.fnNames;
 
-    // fnNames is empty
-    if (savedFnNames === '') {
+    // fnNames is empty or undefined
+    if (savedFnNames === '' || savedFnNames === undefined) {
       chrome.storage.local.set({ fnNames: [fnName] });
       loadFunctionHistory();
       return;
@@ -94,7 +81,8 @@ function deleteOneFunctionHistory() {
     // Delete selected from storage
     chrome.storage.local.get('fnNames', (items) => {
       const savedFnNames = items.fnNames;
-      savedFnNames.splice(index, 1);
+      spliceArray(savedFnNames, index);
+
       chrome.storage.local.set({ fnNames: savedFnNames });
     });
   }
@@ -105,17 +93,6 @@ function clearAllFunctionHistory() {
     chrome.storage.local.set({ fnNames: '' });
     removeOptions(document.getElementById('selectFunction'));
   }
-}
-
-function generateTargetUrl(action, region, fnName) {
-  let targetUrl = '';
-
-  if (action === 'lambda_console') {
-    targetUrl = `https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/functions/${fnName}?tab=code`;
-  } else if (action === 'lambda_logs') {
-    targetUrl = `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logStream:group=%252Faws%252Flambda%252F${fnName}`;
-  }
-  return targetUrl;
 }
 
 async function openLambda() {
