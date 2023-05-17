@@ -1,7 +1,7 @@
 import { genLambdaUrlFromSelection } from './scripts/url.mjs';
 import { saveFunctionHistoryMenuSelect } from './scripts/history.mjs';
 
-chrome.runtime.onInstalled.addListener(() => {
+function createContextMenuItems() {
   const parent = chrome.contextMenus.create({
     id: 'share',
     title: 'Open Lambda Page',
@@ -28,6 +28,14 @@ chrome.runtime.onInstalled.addListener(() => {
     title: 'Options',
     contexts: ['all'],
   });
+}
+
+chrome.runtime.onInstalled.addListener(() => {
+  createContextMenuItems();
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  createContextMenuItems();
 });
 
 async function menuAction(info, tab, action) {
