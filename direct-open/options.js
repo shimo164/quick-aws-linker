@@ -1,24 +1,27 @@
 import { swap, removeOptions, spliceArray } from './scripts/util.mjs';
 import { generateTargetUrl } from './scripts/url.mjs';
 
+const getElem = (id) => document.getElementById(id);
+
+async function getRegion() {
+  const { region } = await chrome.storage.local.get('region');
+  return region;
+}
+
 function loadRegion() {
-  chrome.storage.local.get('region', (items) => {
-    const savedRegion = items.region;
-    if (typeof savedRegion !== 'undefined') {
-      document.getElementById('inputRegion').value = savedRegion;
+  chrome.storage.local.get('region', ({ region }) => {
+    if (region) {
+      getElem('inputRegion').value = region;
     }
   });
 }
 
 function saveRegion() {
-  const value = document.getElementById('inputRegion').value;
+  const value = getElem('inputRegion').value;
   chrome.storage.local.set({ region: value });
 
-  const message1 = document.getElementById('saveRegionMessage1');
-  const message2 = document.getElementById('saveRegionMessage2');
-  const now = new Date();
-  message1.innerHTML = `Value is set to ${value}`;
-  message2.innerHTML = now.toLocaleString();
+  getElem('saveRegionMessage1').innerHTML = `Value is set to ${value}`;
+  getElem('saveRegionMessage2').innerHTML = new Date().toLocaleString();
 }
 
 function loadFunctionHistory() {
@@ -72,33 +75,48 @@ function saveFunctionHistory(fnName) {
 }
 
 function deleteOneFunctionHistory() {
-  if (confirm('Delete Selected History?')) {
-    // Delete selected from option
-    const select = document.getElementById('selectFunction');
-    const index = select.selectedIndex;
-    select.remove(index);
+  getRegion().then((region) => {
+    if (!region) {
+      alert('Please set region');
+      return;
+    }
+    if (confirm('Delete Selected History?')) {
+      // Delete selected from option
+      const select = document.getElementById('selectFunction');
+      const index = select.selectedIndex;
+      select.remove(index);
 
-    // Delete selected from storage
-    chrome.storage.local.get('fnNames', (items) => {
-      const savedFnNames = items.fnNames;
-      spliceArray(savedFnNames, index);
+      // Delete selected from storage
+      chrome.storage.local.get('fnNames', (items) => {
+        const savedFnNames = items.fnNames;
+        spliceArray(savedFnNames, index);
 
-      chrome.storage.local.set({ fnNames: savedFnNames });
-    });
-  }
+        chrome.storage.local.set({ fnNames: savedFnNames });
+      });
+    }
+  });
 }
 
 function clearAllFunctionHistory() {
-  if (confirm('Clear All History?')) {
-    chrome.storage.local.set({ fnNames: '' });
-    removeOptions(document.getElementById('selectFunction'));
-  }
+  getRegion().then((region) => {
+    if (!region) {
+      alert('Please set region');
+      return;
+    }
+    if (confirm('Clear All History?')) {
+      chrome.storage.local.set({ fnNames: '' });
+      removeOptions(document.getElementById('selectFunction'));
+    }
+  });
 }
 
 async function openLambda() {
-  const region = await chrome.storage.local
-    .get(['region'])
-    .then((result) => result.region);
+  const region = await getRegion();
+
+  if (!region) {
+    alert('Please set region');
+    return;
+  }
 
   const fnName = document.getElementById(this.type).value;
 
@@ -106,43 +124,34 @@ async function openLambda() {
 
   saveFunctionHistory(fnName);
 }
-
 document.addEventListener('DOMContentLoaded', loadFunctionHistory);
 document.addEventListener('DOMContentLoaded', loadRegion);
 
-document.getElementById('saveButton').addEventListener('click', saveRegion);
+getElem('saveButton').addEventListener('click', saveRegion);
 
-document.getElementById('lambdaConsoleButton').addEventListener('click', {
-  action: 'lambda_console',
-  type: 'inputLambdaName',
-  handleEvent: openLambda,
-});
-document.getElementById('lambdaLogsButton').addEventListener('click', {
-  action: 'lambda_logs',
-  type: 'inputLambdaName',
-  handleEvent: openLambda,
-});
-
-document
-  .getElementById('lambdaConsoleFromHistoryButton')
-  .addEventListener('click', {
-    action: 'lambda_console',
-    type: 'selectFunction',
+['lambdaConsoleButton', 'lambdaLogsButton'].forEach((id) => {
+  getElem(id).addEventListener('click', {
+    action: id.includes('Console') ? 'lambda_console' : 'lambda_logs',
+    type: 'inputLambdaName',
     handleEvent: openLambda,
   });
+});
 
-document
-  .getElementById('lambdaLogsFromHistoryButton')
-  .addEventListener('click', {
-    action: 'lambda_logs',
-    type: 'selectFunction',
-    handleEvent: openLambda,
-  });
+['lambdaConsoleFromHistoryButton', 'lambdaLogsFromHistoryButton'].forEach(
+  (id) => {
+    getElem(id).addEventListener('click', {
+      action: id.includes('Console') ? 'lambda_console' : 'lambda_logs',
+      type: 'selectFunction',
+      handleEvent: openLambda,
+    });
+  },
+);
 
-document
-  .getElementById('deleteOneFunctionNameButton')
-  .addEventListener('click', deleteOneFunctionHistory);
-
-document
-  .getElementById('clearAllFunctionNameButton')
-  .addEventListener('click', clearAllFunctionHistory);
+getElem('deleteOneFunctionNameButton').addEventListener(
+  'click',
+  deleteOneFunctionHistory,
+);
+getElem('clearAllFunctionNameButton').addEventListener(
+  'click',
+  clearAllFunctionHistory,
+);
