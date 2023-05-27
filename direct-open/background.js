@@ -6,45 +6,57 @@ async function getRegion() {
   return region;
 }
 
+let menuCreationPromise = null;
+
 function createContextMenuItems(regionSet = false) {
-  // Clear the existing menus
-  chrome.contextMenus.removeAll(() => {
-    const parent = chrome.contextMenus.create({
-      id: 'share',
-      title: 'Open Lambda Page',
-      contexts: ['all'],
-    });
-
-    if (regionSet) {
-      ['Lambda Console', 'Lambda Logs'].forEach((title, i) => {
-        chrome.contextMenus.create({
-          parentId: parent,
-          id: `lambda-${i === 0 ? 'console' : 'logs'}`,
-          title: title,
-          contexts: ['selection'],
-        });
+  // Store promise of menu creation in variable
+  menuCreationPromise = new Promise((resolve) => {
+    chrome.contextMenus.removeAll(() => {
+      // Code for creating new context menu items should be inside the callback
+      const parent = chrome.contextMenus.create({
+        id: 'share',
+        title: 'Open Lambda Page',
+        contexts: ['all'],
       });
-    }
 
-    chrome.contextMenus.create({
-      parentId: parent,
-      id: 'options',
-      title: 'Options',
-      contexts: ['all'],
+      if (regionSet) {
+        ['Lambda Console', 'Lambda Logs'].forEach((title, i) => {
+          chrome.contextMenus.create({
+            parentId: parent,
+            id: `lambda-${i === 0 ? 'console' : 'logs'}`,
+            title: title,
+            contexts: ['selection'],
+          });
+        });
+      }
+
+      chrome.contextMenus.create({
+        parentId: parent,
+        id: 'options',
+        title: 'Options',
+        contexts: ['all'],
+      });
+
+      // Resolve the promise when we're done
+      resolve();
     });
   });
 }
 
 async function initialize() {
   const region = await getRegion();
+  // Wait for any previous menu creation to finish
+  if (menuCreationPromise) await menuCreationPromise;
   createContextMenuItems(!!region);
 }
 
 chrome.runtime.onInstalled.addListener(initialize);
 chrome.runtime.onStartup.addListener(initialize);
 
-chrome.storage.onChanged.addListener((changes, namespace) => {
+chrome.storage.onChanged.addListener(async (changes, namespace) => {
   if (changes.region) {
+    // Wait for any previous menu creation to finish
+    if (menuCreationPromise) await menuCreationPromise;
     createContextMenuItems(true);
   }
 });
