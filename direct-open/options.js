@@ -155,3 +155,9 @@ getElem('clearAllFunctionNameButton').addEventListener(
   'click',
   clearAllFunctionHistory,
 );
+
+getElem('xrayTraceButton').addEventListener('click', {
+  action: 'xray_trace',
+  type: 'inputTraceId',
+  handleEvent: openLambda,
+});

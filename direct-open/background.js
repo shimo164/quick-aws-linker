@@ -20,10 +20,10 @@ function createContextMenuItems(regionSet = false) {
       });
 
       if (regionSet) {
-        ['Lambda Console', 'Lambda Logs'].forEach((title, i) => {
+        ['Lambda Console', 'Lambda Logs', 'X-Ray Trace'].forEach((title, i) => {
           chrome.contextMenus.create({
             parentId: parent,
-            id: `lambda-${i === 0 ? 'console' : 'logs'}`,
+            id: `lambda-${i === 0 ? 'console' : i === 1 ? 'logs' : 'trace'}`,
             title: title,
             contexts: ['selection'],
           });
@@ -72,6 +72,8 @@ const menuItemActions = {
     await menuAction(info, tab, 'lambda_console'),
   'lambda-logs': async (info, tab) =>
     await menuAction(info, tab, 'lambda_logs'),
+  'lambda-trace': async (info, tab) =>
+    await menuAction(info, tab, 'lambda_trace'),
   options: () => chrome.runtime.openOptionsPage(),
 };
 
