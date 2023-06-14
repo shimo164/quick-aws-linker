@@ -3,34 +3,66 @@
   <head>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
   </head>
+  <style>
+    body {
+      background-color: #ffffff;
+      color: #212427;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      margin: 0;
+      padding: 20px;
+    }
 
+    button {
+      background-color: #fff;
+      color: #212427;
+      border: 1px solid #212427;
+      border-radius: 25px;
+      padding: 2px 10px;
+
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      margin: 4px 0px;
+      transition-duration: 0.4s;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #ff9900;
+    }
+    select {
+      font-size: 16px; /* Adjust this value as per your requirement */
+    }
+  </style>
   <body>
+    <h1>One-Click Access to AWS Service</h1>
     <h3>Lambda</h3>
     <div>
-      <p>Enter Lambda function name to open (name only)</p>
+      Function name<br />
       <input type="textbox" size="80" id="inputLambdaName" /><br />
       <button id="lambdaConsoleButton">Open Lambda Console</button>
       <button id="lambdaLogsButton">Open Lambda Logs</button>
       <br />
     </div>
-
-    <div><p>---</p></div>
+    <h4>History</h4>
     <div>
-      <p>Recently accessed functions with this extension</p>
+      Recently accessed functions with this extension<br />
       <select id="selectFunction"></select
       ><br />
       <button id="lambdaConsoleFromHistoryButton">Open Lambda Console</button>
       <button id="lambdaLogsFromHistoryButton">Open Lambda Logs</button>
     </div>
-
+    <p></p>
     <div>
-      <p>Delete History</p>
+      Delete History<br />
       <button id="deleteOneFunctionNameButton">Delete Selected</button>
       <button id="clearAllFunctionNameButton">Clear All</button>
     </div>
     <h3>X-Ray</h3>
     <div>
-      <p>Enter X-Ray trace ID</p>
+      Trace ID<br />
       <input type="textbox" size="80" id="inputTraceId" /><br />
       <button id="xrayTraceButton">Open X-Ray Trace</button>
     </div>
