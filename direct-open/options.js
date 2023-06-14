@@ -38,9 +38,7 @@ function loadRegion() {
 function saveOptions() {
   saveRegion();
   saveXrayOption();
-  getElem(
-    'saveMessage',
-  ).innerHTML = `Options saved at ${new Date().toLocaleString()}`;
+  getElem('saveMessage').innerHTML = `Saved at ${new Date().toLocaleString()}`;
 }
 
 function saveRegion() {
@@ -49,9 +47,6 @@ function saveRegion() {
 
   const xrayOption = getElem('xrayOption').checked;
   chrome.storage.local.set({ xrayOption });
-
-  getElem('saveRegionMessage1').innerHTML = `Value is set to ${value}`;
-  getElem('saveRegionMessage2').innerHTML = new Date().toLocaleString();
 }
 
 function loadFunctionHistory() {
@@ -158,8 +153,6 @@ document.addEventListener('DOMContentLoaded', loadFunctionHistory);
 document.addEventListener('DOMContentLoaded', loadRegion);
 document.addEventListener('DOMContentLoaded', loadXrayOption);
 
-getElem('saveButton').addEventListener('click', saveRegion);
-
 ['lambdaConsoleButton', 'lambdaLogsButton'].forEach((id) => {
   getElem(id).addEventListener('click', {
     action: id.includes('Console') ? 'lambda_console' : 'lambda_logs',
@@ -193,6 +186,7 @@ getElem('xrayTraceButton').addEventListener('click', {
   handleEvent: openLambda,
 });
 
+getElem('saveButton').addEventListener('click', saveRegion);
 getElem('saveButton').addEventListener('click', saveOptions);
 
 getElem('xrayOption').addEventListener('change', handleXrayOptionChange);
