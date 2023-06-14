@@ -6,9 +6,14 @@ async function getRegion() {
   return region;
 }
 
+async function getXrayOption() {
+  const { xrayOption } = await chrome.storage.local.get('xrayOption');
+  return xrayOption;
+}
+
 let menuCreationPromise = null;
 
-function createContextMenuItems(regionSet = false) {
+function createContextMenuItems(regionSet = false, xrayOption = false) {
   // Store promise of menu creation in variable
   menuCreationPromise = new Promise((resolve) => {
     chrome.contextMenus.removeAll(() => {
@@ -28,6 +33,14 @@ function createContextMenuItems(regionSet = false) {
             contexts: ['selection'],
           });
         });
+        if (xrayOption) {
+          chrome.contextMenus.create({
+            parentId: parent,
+            id: 'lambda-trace',
+            title: 'X-Ray Trace',
+            contexts: ['selection'],
+          });
+        }
       }
 
       chrome.contextMenus.create({
@@ -45,19 +58,22 @@ function createContextMenuItems(regionSet = false) {
 
 async function initialize() {
   const region = await getRegion();
+  const xrayOption = await getXrayOption();
   // Wait for any previous menu creation to finish
   if (menuCreationPromise) await menuCreationPromise;
-  createContextMenuItems(!!region);
+  createContextMenuItems(!!region, xrayOption);
 }
 
 chrome.runtime.onInstalled.addListener(initialize);
 chrome.runtime.onStartup.addListener(initialize);
 
 chrome.storage.onChanged.addListener(async (changes, namespace) => {
-  if (changes.region) {
+  if (changes.region || changes.xrayOption) {
     // Wait for any previous menu creation to finish
     if (menuCreationPromise) await menuCreationPromise;
-    createContextMenuItems(true);
+    const region = await getRegion();
+    const xrayOption = await getXrayOption();
+    createContextMenuItems(!!region, xrayOption);
   }
 });
 
@@ -72,6 +88,8 @@ const menuItemActions = {
     await menuAction(info, tab, 'lambda_console'),
   'lambda-logs': async (info, tab) =>
     await menuAction(info, tab, 'lambda_logs'),
+  'lambda-trace': async (info, tab) =>
+    await menuAction(info, tab, 'lambda_trace'),
   options: () => chrome.runtime.openOptionsPage(),
 };
 

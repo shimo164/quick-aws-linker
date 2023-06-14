@@ -3,6 +3,8 @@ const targetUrlActions = {
     `https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/functions/${fnName}?tab=code`,
   lambda_logs: (region, fnName) =>
     `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#logStream:group=%252Faws%252Flambda%252F${fnName}`,
+  lambda_trace: (region, traceId) =>
+    `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#xray:traces/${traceId}`,
 };
 
 function generateTargetUrl(action, region, fnName) {
