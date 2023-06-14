@@ -5,6 +5,7 @@
   </head>
 
   <body>
+    <h3>Lambda</h3>
     <div>
       <p>Enter Lambda function name to open (name only)</p>
       <input type="textbox" size="80" id="inputLambdaName" /><br />
@@ -32,13 +33,25 @@
       <p>Enter X-Ray trace ID</p>
       <input type="textbox" size="80" id="inputTraceId" /><br />
       <button id="xrayTraceButton">Open X-Ray Trace</button>
-      <br />
     </div>
-    <h3>Setting</h3>
+    <h3>Settings</h3>
     <div>
-      <p>Region</p>
-      <input type="textbox" id="inputRegion" /><br />
-      <button id="saveButton">Save</button>
+      <p>
+        <label for="xrayOption">
+          Enable Right-Click Access to X-Ray Page<br />
+          <input type="checkbox" id="xrayOption" />
+        </label>
+      </p>
+    </div>
+    <div>
+      <p>
+        Region<br />
+        <input type="textbox" id="inputRegion" /><br />
+      </p>
+      <p>
+        <button id="saveButton">Save</button>
+      </p>
+      <p id="saveMessage"></p>
     </div>
     <div>
       <p id="saveRegionMessage1"></p>

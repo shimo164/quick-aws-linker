@@ -3,9 +3,28 @@ import { generateTargetUrl } from './scripts/url.mjs';
 
 const getElem = (id) => document.getElementById(id);
 
+let xrayOptionLocal; // add this variable to hold the local value of the checkbox
+
 async function getRegion() {
   const { region } = await chrome.storage.local.get('region');
   return region;
+}
+
+// Add this function to load XrayOption from storage
+async function loadXrayOption() {
+  const { xrayOption } = await chrome.storage.local.get('xrayOption');
+  xrayOptionLocal = !!xrayOption; // make sure it's always a boolean
+  getElem('xrayOption').checked = xrayOptionLocal;
+}
+
+// Add this function to handle changes to the checkbox
+function handleXrayOptionChange() {
+  xrayOptionLocal = getElem('xrayOption').checked;
+}
+
+// Add this function to save XrayOption to storage
+function saveXrayOption() {
+  chrome.storage.local.set({ xrayOption: xrayOptionLocal });
 }
 
 function loadRegion() {
@@ -16,9 +35,20 @@ function loadRegion() {
   });
 }
 
+function saveOptions() {
+  saveRegion();
+  saveXrayOption();
+  getElem(
+    'saveMessage',
+  ).innerHTML = `Options saved at ${new Date().toLocaleString()}`;
+}
+
 function saveRegion() {
   const value = getElem('inputRegion').value;
   chrome.storage.local.set({ region: value });
+
+  const xrayOption = getElem('xrayOption').checked;
+  chrome.storage.local.set({ xrayOption });
 
   getElem('saveRegionMessage1').innerHTML = `Value is set to ${value}`;
   getElem('saveRegionMessage2').innerHTML = new Date().toLocaleString();
@@ -126,6 +156,7 @@ async function openLambda() {
 }
 document.addEventListener('DOMContentLoaded', loadFunctionHistory);
 document.addEventListener('DOMContentLoaded', loadRegion);
+document.addEventListener('DOMContentLoaded', loadXrayOption);
 
 getElem('saveButton').addEventListener('click', saveRegion);
 
@@ -161,3 +192,7 @@ getElem('xrayTraceButton').addEventListener('click', {
   type: 'inputTraceId',
   handleEvent: openLambda,
 });
+
+getElem('saveButton').addEventListener('click', saveOptions);
+
+getElem('xrayOption').addEventListener('change', handleXrayOptionChange);
