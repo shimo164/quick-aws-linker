@@ -171,6 +171,12 @@ document.addEventListener('DOMContentLoaded', loadXrayOption);
   },
 );
 
+getElem('xrayTraceButton').addEventListener('click', {
+  action: 'xray_trace',
+  type: 'inputTraceId',
+  handleEvent: openLambda,
+});
+
 getElem('deleteOneFunctionNameButton').addEventListener(
   'click',
   deleteOneFunctionHistory,
@@ -180,13 +186,6 @@ getElem('clearAllFunctionNameButton').addEventListener(
   clearAllFunctionHistory,
 );
 
-getElem('xrayTraceButton').addEventListener('click', {
-  action: 'xray_trace',
-  type: 'inputTraceId',
-  handleEvent: openLambda,
-});
-
-getElem('saveButton').addEventListener('click', saveRegion);
 getElem('saveButton').addEventListener('click', saveOptions);
 
 getElem('xrayOption').addEventListener('change', handleXrayOptionChange);
