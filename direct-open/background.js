@@ -89,7 +89,7 @@ const menuItemActions = {
   'lambda-logs': async (info, tab) =>
     await menuAction(info, tab, 'lambda_logs'),
   'lambda-trace': async (info, tab) =>
-    await menuAction(info, tab, 'lambda_trace'),
+    await menuAction(info, tab, 'xray_trace'),
   options: () => chrome.runtime.openOptionsPage(),
 };
 
