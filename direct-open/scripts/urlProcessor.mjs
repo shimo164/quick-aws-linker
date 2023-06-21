@@ -7,12 +7,12 @@ const targetUrlActions = {
     `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#xray:traces/${traceId}`,
 };
 
-function generateTargetUrl(action, region, fnName) {
+export function generateTargetUrl(action, region, fnName) {
   const urlGenerator = targetUrlActions[action];
   return urlGenerator ? urlGenerator(region, fnName) : '';
 }
 
-async function genLambdaUrlFromSelection(info, action) {
+export async function genLambdaUrlFromSelection(info, action) {
   const { region } = await chrome.storage.local.get(['region']);
 
   const fnName = info.selectionText;
@@ -20,5 +20,3 @@ async function genLambdaUrlFromSelection(info, action) {
 
   return { targetUrl, fnName };
 }
-
-export { generateTargetUrl, genLambdaUrlFromSelection };

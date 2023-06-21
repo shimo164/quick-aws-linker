@@ -1,15 +1,6 @@
-import { genLambdaUrlFromSelection } from './scripts/url.mjs';
+import { genLambdaUrlFromSelection } from './scripts/urlProcessor.mjs';
 import { saveFunctionHistoryMenuSelect } from './scripts/history.mjs';
-
-async function getRegion() {
-  const { region } = await chrome.storage.local.get('region');
-  return region;
-}
-
-async function getXrayOption() {
-  const { xrayOption } = await chrome.storage.local.get('xrayOption');
-  return xrayOption;
-}
+import { getRegion, getXrayOption } from './scripts/util.mjs';
 
 let menuCreationPromise = null;
 
