@@ -4,46 +4,51 @@ import { getRegion, getXrayOption } from './scripts/util.mjs';
 
 let menuCreationPromise = null;
 
+let menuCreated = false; // flag variable
+
 function createContextMenuItems(regionSet = false, xrayOption = false) {
-  // Store promise of menu creation in variable
-  menuCreationPromise = new Promise((resolve) => {
-    chrome.contextMenus.removeAll(() => {
-      // Code for creating new context menu items should be inside the callback
-      const parent = chrome.contextMenus.create({
-        id: 'share',
-        title: 'Open Lambda Page',
-        contexts: ['all'],
-      });
+  // Check if menu is already created
+  if (menuCreated) {
+    return;
+  }
 
-      if (regionSet) {
-        ['Lambda Console', 'Lambda Logs'].forEach((title, i) => {
-          chrome.contextMenus.create({
-            parentId: parent,
-            id: `lambda-${i === 0 ? 'console' : 'logs'}`,
-            title: title,
-            contexts: ['selection'],
-          });
-        });
-        if (xrayOption) {
-          chrome.contextMenus.create({
-            parentId: parent,
-            id: 'lambda-trace',
-            title: 'X-Ray Trace',
-            contexts: ['selection'],
-          });
-        }
-      }
-
-      chrome.contextMenus.create({
-        parentId: parent,
-        id: 'options',
-        title: 'Options',
-        contexts: ['all'],
-      });
-
-      // Resolve the promise when we're done
-      resolve();
+  chrome.contextMenus.removeAll(() => {
+    chrome.contextMenus.create({
+      id: 'share',
+      title: 'Open Lambda Page',
+      contexts: ['all'],
     });
+
+    if (regionSet) {
+      ['Lambda Console', 'Lambda Logs'].forEach((title, i) => {
+        const id = `lambda-${i === 0 ? 'console' : 'logs'}`;
+        chrome.contextMenus.create({
+          parentId: 'share',
+          id,
+          title: title,
+          contexts: ['selection'],
+        });
+      });
+
+      if (xrayOption) {
+        chrome.contextMenus.create({
+          parentId: 'share',
+          id: 'lambda-trace',
+          title: 'X-Ray Trace',
+          contexts: ['selection'],
+        });
+      }
+    }
+
+    chrome.contextMenus.create({
+      parentId: 'share',
+      id: 'options',
+      title: 'Options',
+      contexts: ['all'],
+    });
+
+    // Set flag to true
+    menuCreated = true;
   });
 }
 
