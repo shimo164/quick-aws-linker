@@ -75,7 +75,9 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
 
 async function menuAction(info, tab, action) {
   const { targetUrl, fnName } = await genLambdaUrlFromSelection(info, action);
-  saveFunctionHistoryMenuSelect(fnName);
+  if (action !== 'xray_trace') {
+    saveFunctionHistoryMenuSelect(fnName);
+  }
   chrome.tabs.create({ url: targetUrl });
 }
 
