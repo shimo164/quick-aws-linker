@@ -95,3 +95,9 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   const action = menuItemActions[info.menuItemId];
   if (action) await action(info, tab);
 });
+
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === 'install') {
+    chrome.runtime.openOptionsPage();
+  }
+});
