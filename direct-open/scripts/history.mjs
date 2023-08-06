@@ -7,14 +7,8 @@ export async function saveFunctionHistoryMenuSelect(fnName) {
 
   const index = savedFnNames.findIndex((el) => el === fnName);
 
-  // If a name already exists, it should be at the beginning of the array.
   const newFnNames =
     index !== -1 ? swap(savedFnNames, 0, index) : [fnName, ...savedFnNames];
-
-  // Cap the length of history to 50
-  if (newFnNames.length > 50) {
-    newFnNames.pop(); // Remove the oldest item
-  }
 
   chrome.storage.local.set({ fnNames: newFnNames });
 }
