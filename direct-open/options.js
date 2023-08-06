@@ -20,19 +20,45 @@ async function loadXrayOption() {
 
 async function loadRegion() {
   const { region } = await chrome.storage.local.get('region');
+
+  const regionInput = document.getElementById('inputRegion');
+  const regionLabel = document.getElementById('regionLabel');
+  const regionMessage = document.getElementById('regionMessage');
+
   if (region) {
-    getElem('inputRegion').value = region;
+    regionInput.value = region;
+    regionLabel.style.color = 'black';
+    regionMessage.textContent = '';
+  } else {
+    regionLabel.style.color = 'red';
+    regionMessage.textContent =
+      'Attention: Region is empty, please set and save.';
   }
 }
 
+const regionPattern =
+  /^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d$/;
+
 function saveOptions() {
-  const value = getElem('inputRegion').value;
+  const value = document.getElementById('inputRegion').value;
+
+  // Validate region using regex pattern
+  if (!regionPattern.test(value)) {
+    document.getElementById('saveMessage').innerHTML =
+      'Invalid region format. Please check and try again.';
+    return;
+  }
+
   chrome.storage.local.set({ region: value });
 
-  const xrayOption = getElem('xrayOption').checked;
+  const xrayOption = document.getElementById('xrayOption').checked;
   chrome.storage.local.set({ xrayOption });
 
-  getElem('saveMessage').innerHTML = `Saved at ${new Date().toLocaleString()}`;
+  document.getElementById(
+    'saveMessage',
+  ).innerHTML = `Saved at ${new Date().toLocaleString()}`;
+
+  loadRegion();
 }
 
 async function openLambda() {
