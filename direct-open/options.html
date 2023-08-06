@@ -32,15 +32,9 @@
     button:hover {
       background-color: #ff9900;
     }
-    #regionMessage {
-      color: red;
-      font-weight: bold;
-      font-size: x-large;
-    }
   </style>
   <body>
     <h1>One-Click Access to AWS Service</h1>
-    <p id="regionMessage"></p>
     <h3>Lambda</h3>
     <div>
       Function name<br />
@@ -78,8 +72,10 @@
       </p>
     </div>
     <div>
-      <p id="regionLabel">Region<br /></p>
-      <input type="textbox" id="inputRegion" /><br />
+      <p>
+        Region<br />
+        <input type="textbox" id="inputRegion" /><br />
+      </p>
       <p>
         <button id="saveButton">Save</button>
       </p>

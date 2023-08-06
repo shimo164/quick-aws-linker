@@ -7,7 +7,6 @@ import {
   clearAllFunctionHistory,
 } from './scripts/history.mjs';
 
-// alias
 const getElem = (id) => document.getElementById(id);
 
 let xrayOptionLocal; // add this variable to hold the local value of the checkbox
@@ -21,43 +20,19 @@ async function loadXrayOption() {
 
 async function loadRegion() {
   const { region } = await chrome.storage.local.get('region');
-
-  const regionInput = getElem('inputRegion');
-  const regionLabel = getElem('regionLabel');
-  const regionMessage = getElem('regionMessage');
-
   if (region) {
-    regionInput.value = region;
-    regionLabel.style.color = 'black';
-    regionMessage.textContent = '';
-  } else {
-    regionLabel.style.color = 'red';
-    regionMessage.textContent =
-      'Attention: Region is empty, please set and save.';
+    getElem('inputRegion').value = region;
   }
 }
 
-const regionPattern =
-  /^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d$/;
-
 function saveOptions() {
   const value = getElem('inputRegion').value;
-
-  // Validate region using regex pattern
-  if (!regionPattern.test(value)) {
-    getElem('saveMessage').innerHTML =
-      'Invalid region format. Please check and try again.';
-    return;
-  }
-
   chrome.storage.local.set({ region: value });
 
   const xrayOption = getElem('xrayOption').checked;
   chrome.storage.local.set({ xrayOption });
 
   getElem('saveMessage').innerHTML = `Saved at ${new Date().toLocaleString()}`;
-
-  loadRegion();
 }
 
 async function accessToService() {
@@ -68,7 +43,7 @@ async function accessToService() {
     return;
   }
 
-  const fnName = getElem(this.type).value;
+  const fnName = document.getElementById(this.type).value;
 
   chrome.tabs.create({ url: generateTargetUrl(this.action, region, fnName) });
 
