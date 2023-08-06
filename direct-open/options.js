@@ -20,45 +20,19 @@ async function loadXrayOption() {
 
 async function loadRegion() {
   const { region } = await chrome.storage.local.get('region');
-
-  const regionInput = document.getElementById('inputRegion');
-  const regionLabel = document.getElementById('regionLabel');
-  const regionMessage = document.getElementById('regionMessage');
-
   if (region) {
-    regionInput.value = region;
-    regionLabel.style.color = 'black';
-    regionMessage.textContent = '';
-  } else {
-    regionLabel.style.color = 'red';
-    regionMessage.textContent =
-      'Attention: Region is empty, please set and save.';
+    getElem('inputRegion').value = region;
   }
 }
 
-const regionPattern =
-  /^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d$/;
-
 function saveOptions() {
-  const value = document.getElementById('inputRegion').value;
-
-  // Validate region using regex pattern
-  if (!regionPattern.test(value)) {
-    document.getElementById('saveMessage').innerHTML =
-      'Invalid region format. Please check and try again.';
-    return;
-  }
-
+  const value = getElem('inputRegion').value;
   chrome.storage.local.set({ region: value });
 
-  const xrayOption = document.getElementById('xrayOption').checked;
+  const xrayOption = getElem('xrayOption').checked;
   chrome.storage.local.set({ xrayOption });
 
-  document.getElementById(
-    'saveMessage',
-  ).innerHTML = `Saved at ${new Date().toLocaleString()}`;
-
-  loadRegion();
+  getElem('saveMessage').innerHTML = `Saved at ${new Date().toLocaleString()}`;
 }
 
 async function openLambda() {
