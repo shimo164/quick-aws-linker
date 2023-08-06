@@ -95,4 +95,10 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (action) await action(info, tab);
 });
 
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === 'install') {
+    chrome.runtime.openOptionsPage();
+  }
+});
+
 export { createContextMenuItems };
