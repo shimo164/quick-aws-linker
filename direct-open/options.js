@@ -10,15 +10,6 @@ import {
 
 const getElem = (id) => document.getElementById(id);
 
-let xrayOptionLocal; // add this variable to hold the local value of the checkbox
-
-async function loadXrayOption() {
-  const { xrayOption } = await chrome.storage.local.get('xrayOption');
-
-  xrayOptionLocal = !!xrayOption; // make sure it's always a boolean
-  getElem('xrayOption').checked = xrayOptionLocal;
-}
-
 async function loadRegion() {
   const { region } = await chrome.storage.local.get('region');
 
@@ -53,10 +44,7 @@ function saveOptions() {
 
   chrome.storage.local.set({ region: region });
 
-  const xrayOption = document.getElementById('xrayOption').checked;
-  chrome.storage.local.set({ xrayOption });
-
-  createContextMenuItems(!!region, !!xrayOption);
+  createContextMenuItems(!!region);
   loadRegion();
 
   getElem('saveMessage').innerHTML = `Saved at ${new Date().toLocaleString()}`;
@@ -81,7 +69,6 @@ async function accessToService() {
 
 document.addEventListener('DOMContentLoaded', loadFunctionHistory);
 document.addEventListener('DOMContentLoaded', loadRegion);
-document.addEventListener('DOMContentLoaded', loadXrayOption);
 
 ['lambdaConsoleButton', 'lambdaLogsButton'].forEach((id) => {
   getElem(id).addEventListener('click', {

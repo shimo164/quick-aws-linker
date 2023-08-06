@@ -20,8 +20,3 @@ export async function getRegion() {
   const { region } = await chrome.storage.local.get('region');
   return region;
 }
-
-export async function getXrayOption() {
-  const { xrayOption } = await chrome.storage.local.get('xrayOption');
-  return xrayOption;
-}

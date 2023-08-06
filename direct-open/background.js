@@ -1,12 +1,12 @@
-import { genLambdaUrlFromSelection } from './scripts/urlProcessor.mjs';
+import { generateUrlWithSelection } from './scripts/urlProcessor.mjs';
 import { saveFunctionHistoryMenuSelect } from './scripts/history.mjs';
-import { getRegion, getXrayOption } from './scripts/util.mjs';
+import { getRegion } from './scripts/util.mjs';
 
 let menuCreationPromise = null;
 
-let menuCreated = false; // flag variable
+let menuCreated = false;
 
-function createContextMenuItems(regionSet = false, xrayOption = false) {
+function createContextMenuItems(regionSet = false) {
   // Check if menu is already created
   if (menuCreated) {
     return;
@@ -20,22 +20,19 @@ function createContextMenuItems(regionSet = false, xrayOption = false) {
     });
 
     if (regionSet) {
-      ['Lambda Console', 'Lambda Logs'].forEach((title, i) => {
-        const id = `lambda-${i === 0 ? 'console' : 'logs'}`;
+      const menuItems = [
+        { title: 'Lambda Console', id: 'lambda-console' },
+        { title: 'Lambda Logs', id: 'lambda-logs' },
+        { title: 'X-Ray Trace', id: 'lambda-trace' },
+      ];
+
+      menuItems.forEach((item) => {
         chrome.contextMenus.create({
           parentId: 'share',
-          id,
-          title: title,
+          id: item.id,
+          title: item.title,
           contexts: ['selection'],
         });
-      });
-    }
-    if (xrayOption) {
-      chrome.contextMenus.create({
-        parentId: 'share',
-        id: 'lambda-trace',
-        title: 'X-Ray Trace',
-        contexts: ['selection'],
       });
     }
 
@@ -45,35 +42,31 @@ function createContextMenuItems(regionSet = false, xrayOption = false) {
       title: 'Options',
       contexts: ['all'],
     });
-
-    // Set flag to true
     menuCreated = true;
   });
 }
 
 async function initialize() {
   const region = await getRegion();
-  const xrayOption = await getXrayOption();
   // Wait for any previous menu creation to finish
   if (menuCreationPromise) await menuCreationPromise;
-  createContextMenuItems(!!region, xrayOption);
+  createContextMenuItems(!!region);
 }
 
 chrome.runtime.onInstalled.addListener(initialize);
 chrome.runtime.onStartup.addListener(initialize);
 
 chrome.storage.onChanged.addListener(async (changes, namespace) => {
-  if (changes.region || changes.xrayOption) {
+  if (changes.region) {
     // Wait for any previous menu creation to finish
     if (menuCreationPromise) await menuCreationPromise;
     const region = await getRegion();
-    const xrayOption = await getXrayOption();
-    createContextMenuItems(!!region, xrayOption);
+    createContextMenuItems(!!region);
   }
 });
 
 async function menuAction(info, tab, action) {
-  const { targetUrl, fnName } = await genLambdaUrlFromSelection(info, action);
+  const { targetUrl, fnName } = await generateUrlWithSelection(info, action);
   if (action !== 'xray_trace') {
     saveFunctionHistoryMenuSelect(fnName);
   }
