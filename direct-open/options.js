@@ -21,16 +21,39 @@ async function loadXrayOption() {
 
 async function loadRegion() {
   const { region } = await chrome.storage.local.get('region');
+
+  const regionInput = document.getElementById('inputRegion');
+  const regionLabel = document.getElementById('regionLabel');
+  const regionMessage = document.getElementById('regionMessage');
+
   if (region) {
-    getElem('inputRegion').value = region;
+    regionInput.value = region;
+    regionLabel.style.color = 'black';
+    regionMessage.textContent = '';
+  } else {
+    regionLabel.style.color = 'red';
+    regionMessage.textContent =
+      'Attention: Region is empty, please set and save.';
   }
 }
+
+const regionPattern =
+  /^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d$/;
 
 function saveOptions() {
   const region = getElem('inputRegion').value;
   chrome.storage.local.set({ region: region });
 
-  const xrayOption = getElem('xrayOption').checked;
+  // Validate region using regex pattern
+  if (!regionPattern.test(region)) {
+    document.getElementById('saveMessage').innerHTML =
+      'Invalid region format. Please check and try again.';
+    return;
+  }
+
+  chrome.storage.local.set({ region: region });
+
+  const xrayOption = document.getElementById('xrayOption').checked;
   chrome.storage.local.set({ xrayOption });
 
   createContextMenuItems(!!region, !!xrayOption);
