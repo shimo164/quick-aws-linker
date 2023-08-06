@@ -12,7 +12,7 @@ export function generateTargetUrl(action, region, fnName) {
   return urlGenerator ? urlGenerator(region, fnName) : '';
 }
 
-export async function genLambdaUrlFromSelection(info, action) {
+export async function generateUrlWithSelection(info, action) {
   const { region } = await chrome.storage.local.get(['region']);
 
   const fnName = info.selectionText;
