@@ -57,6 +57,7 @@ function saveOptions() {
   chrome.storage.local.set({ xrayOption });
 
   createContextMenuItems(!!region, !!xrayOption);
+  loadRegion();
 
   getElem('saveMessage').innerHTML = `Saved at ${new Date().toLocaleString()}`;
 }
