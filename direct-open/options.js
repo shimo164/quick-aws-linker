@@ -60,7 +60,7 @@ function saveOptions() {
   loadRegion();
 }
 
-async function openLambda() {
+async function accessToService() {
   const region = await getRegion();
 
   if (!region) {
@@ -72,7 +72,9 @@ async function openLambda() {
 
   chrome.tabs.create({ url: generateTargetUrl(this.action, region, fnName) });
 
-  saveFunctionHistory(fnName);
+  if (this.action !== 'xray_trace') {
+    saveFunctionHistory(fnName);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', loadFunctionHistory);
@@ -83,7 +85,7 @@ document.addEventListener('DOMContentLoaded', loadXrayOption);
   getElem(id).addEventListener('click', {
     action: id.includes('Console') ? 'lambda_console' : 'lambda_logs',
     type: 'inputLambdaName',
-    handleEvent: openLambda,
+    handleEvent: accessToService,
   });
 });
 
@@ -92,7 +94,7 @@ document.addEventListener('DOMContentLoaded', loadXrayOption);
     getElem(id).addEventListener('click', {
       action: id.includes('Console') ? 'lambda_console' : 'lambda_logs',
       type: 'selectFunction',
-      handleEvent: openLambda,
+      handleEvent: accessToService,
     });
   },
 );
@@ -100,7 +102,7 @@ document.addEventListener('DOMContentLoaded', loadXrayOption);
 getElem('xrayTraceButton').addEventListener('click', {
   action: 'xray_trace',
   type: 'inputTraceId',
-  handleEvent: openLambda,
+  handleEvent: accessToService,
 });
 
 getElem('deleteOneFunctionNameButton').addEventListener(
