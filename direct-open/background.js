@@ -29,15 +29,14 @@ function createContextMenuItems(regionSet = false, xrayOption = false) {
           contexts: ['selection'],
         });
       });
-
-      if (xrayOption) {
-        chrome.contextMenus.create({
-          parentId: 'share',
-          id: 'lambda-trace',
-          title: 'X-Ray Trace',
-          contexts: ['selection'],
-        });
-      }
+    }
+    if (xrayOption) {
+      chrome.contextMenus.create({
+        parentId: 'share',
+        id: 'lambda-trace',
+        title: 'X-Ray Trace',
+        contexts: ['selection'],
+      });
     }
 
     chrome.contextMenus.create({
@@ -95,3 +94,5 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   const action = menuItemActions[info.menuItemId];
   if (action) await action(info, tab);
 });
+
+export { createContextMenuItems };

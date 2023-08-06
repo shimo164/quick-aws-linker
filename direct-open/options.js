@@ -1,5 +1,6 @@
 import { generateTargetUrl } from './scripts/urlProcessor.mjs';
 import { getRegion } from './scripts/util.mjs';
+import { createContextMenuItems } from './background.js';
 import {
   saveFunctionHistory,
   loadFunctionHistory,
@@ -26,11 +27,13 @@ async function loadRegion() {
 }
 
 function saveOptions() {
-  const value = getElem('inputRegion').value;
-  chrome.storage.local.set({ region: value });
+  const region = getElem('inputRegion').value;
+  chrome.storage.local.set({ region: region });
 
   const xrayOption = getElem('xrayOption').checked;
   chrome.storage.local.set({ xrayOption });
+
+  createContextMenuItems(!!region, !!xrayOption);
 
   getElem('saveMessage').innerHTML = `Saved at ${new Date().toLocaleString()}`;
 }
