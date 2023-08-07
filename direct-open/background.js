@@ -7,12 +7,10 @@ let menuCreationPromise = null;
 let menuCreated = false;
 
 function createContextMenuItems(regionSet = false) {
-  // Check if menu is already created
-  if (menuCreated) {
-    return;
-  }
-
+  // Remove all existing context menus and reset the flag
   chrome.contextMenus.removeAll(() => {
+    menuCreated = false;
+
     chrome.contextMenus.create({
       id: 'share',
       title: 'Open Lambda Page',
@@ -42,6 +40,7 @@ function createContextMenuItems(regionSet = false) {
       title: 'Options',
       contexts: ['all'],
     });
+
     menuCreated = true;
   });
 }
