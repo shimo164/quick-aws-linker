@@ -1,7 +1,7 @@
 {
-	"name": "λ direct open console/logs",
-	"description": "Drag a lambda function name and right click menu. You can open the console or logs page directly.",
-	"version": "1.1",
+	"name": "QuickAWS Linker",
+	"description": "This Chrome extension allows you to seamlessly navigate to the AWS Lambda console, CloudWatch logs, and X-Ray traces.",
+	"version": "1.2",
 	"manifest_version": 3,
 	"permissions": [
 		"activeTab",
@@ -12,7 +12,7 @@
 	],
 	"options_page": "options.html",
 	"action": {
-		"default_title": "λ direct open console/logs"
+		"default_title": "QuickAWS Linker"
 	},
 	"icons": {
 		"16": "icons/16.png",

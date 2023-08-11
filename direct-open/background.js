@@ -13,7 +13,7 @@ function createContextMenuItems(regionSet = false) {
 
     chrome.contextMenus.create({
       id: 'share',
-      title: 'Open Lambda Page',
+      title: 'QuickAWS Linker',
       contexts: ['all'],
     });
 
