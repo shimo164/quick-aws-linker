@@ -1,5 +1,10 @@
 import { generateTargetUrl } from './scripts/urlProcessor.mjs';
-import { getRegion } from './scripts/util.mjs';
+import {
+  getRegion,
+  isValidRegionName,
+  isValidFunctionName,
+  isValidXrayTraceId,
+} from './scripts/util.mjs';
 import { createContextMenuItems } from './background.js';
 import {
   saveFunctionHistory,
@@ -58,13 +63,21 @@ async function accessToService() {
     return;
   }
 
-  const fnName = document.getElementById(this.type).value;
-
-  chrome.tabs.create({ url: generateTargetUrl(this.action, region, fnName) });
-
-  if (this.action !== 'xray_trace') {
-    saveFunctionHistory(fnName);
+  const input = document.getElementById(this.type).value;
+  if (this.action === 'lambda_console' || this.action === 'lambda_logs') {
+    if (!isValidFunctionName(input)) {
+      alert('Invalid format');
+      return;
+    }
+    saveFunctionHistory(input);
+  } else if (this.action == 'xray_trace') {
+    if (!isValidXrayTraceId(input)) {
+      alert('Invalid format');
+      return;
+    }
   }
+
+  chrome.tabs.create({ url: generateTargetUrl(this.action, region, input) });
 }
 
 document.addEventListener('DOMContentLoaded', loadFunctionHistory);

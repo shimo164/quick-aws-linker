@@ -20,3 +20,19 @@ export async function getRegion() {
   const { region } = await chrome.storage.local.get('region');
   return region;
 }
+
+export function isValidFunctionName(name) {
+  const regex = /^[a-zA-Z0-9-_]{1,64}$/;
+  return regex.test(name);
+}
+
+export function isValidXrayTraceId(traceId) {
+  const regex = /^1-[a-fA-F0-9]{8}-[a-fA-F0-9]{24}$/;
+  return regex.test(traceId);
+}
+
+export function isValidRegionName(name) {
+  const regex =
+    /^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d$/;
+  return regex.test(name);
+}
