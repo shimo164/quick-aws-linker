@@ -8,11 +8,13 @@ import {
 } from './scripts/util.mjs';
 
 let menuCreationPromise = null;
-
 let menuCreated = false;
+let isCreatingMenu = false;
 
 function createContextMenuItems(regionSet = false) {
-  // Remove all existing context menus and reset the flag
+  if (isCreatingMenu) return;
+  isCreatingMenu = true;
+
   chrome.contextMenus.removeAll(() => {
     menuCreated = false;
 
@@ -47,6 +49,7 @@ function createContextMenuItems(regionSet = false) {
     });
 
     menuCreated = true;
+    isCreatingMenu = false;
   });
 }
 
@@ -56,6 +59,16 @@ async function initialize() {
   if (menuCreationPromise) await menuCreationPromise;
   createContextMenuItems(!!region);
 }
+
+function handleExtensionLoad(details) {
+  if (details.reason === 'install') {
+    chrome.runtime.openOptionsPage();
+  }
+  initialize();
+}
+
+chrome.runtime.onInstalled.addListener(handleExtensionLoad);
+chrome.runtime.onStartup.addListener(handleExtensionLoad);
 
 chrome.runtime.onInstalled.addListener(initialize);
 chrome.runtime.onStartup.addListener(initialize);
@@ -108,6 +121,20 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     chrome.runtime.openOptionsPage();
+  }
+});
+
+let storageChangeDebounceTimer = null;
+const DEBOUNCE_DELAY = 300; // 300ms, adjust as needed
+
+chrome.storage.onChanged.addListener(async (changes, namespace) => {
+  if (changes.region) {
+    clearTimeout(storageChangeDebounceTimer);
+
+    storageChangeDebounceTimer = setTimeout(async () => {
+      const region = await getRegion();
+      createContextMenuItems(!!region);
+    }, DEBOUNCE_DELAY);
   }
 });
 
