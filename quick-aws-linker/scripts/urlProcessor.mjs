@@ -18,5 +18,5 @@ export async function generateUrlWithSelection(info, action) {
   const fnName = info.selectionText;
   const targetUrl = generateTargetUrl(action, region, fnName);
 
-  return { targetUrl, fnName };
+  return targetUrl;
 }

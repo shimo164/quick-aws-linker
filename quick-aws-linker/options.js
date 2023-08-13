@@ -33,15 +33,10 @@ async function loadRegion() {
   }
 }
 
-const regionPattern =
-  /^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d$/;
-
 function saveOptions() {
   const region = getElem('inputRegion').value;
-  chrome.storage.local.set({ region: region });
 
-  // Validate region using regex pattern
-  if (!regionPattern.test(region)) {
+  if (!isValidRegionName(region)) {
     document.getElementById('saveMessage').innerHTML =
       'Invalid region format. Please check and try again.';
     return;

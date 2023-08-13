@@ -36,3 +36,12 @@ export function isValidRegionName(name) {
     /^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d$/;
   return regex.test(name);
 }
+
+export function notifyUser(title, message) {
+  chrome.notifications.create({
+    type: 'basic',
+    title: title,
+    message: message,
+    iconUrl: 'icons/48.png',
+  });
+}

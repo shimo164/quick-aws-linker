@@ -1,6 +1,11 @@
 import { generateUrlWithSelection } from './scripts/urlProcessor.mjs';
 import { saveFunctionHistoryMenuSelect } from './scripts/history.mjs';
-import { getRegion } from './scripts/util.mjs';
+import {
+  getRegion,
+  isValidFunctionName,
+  isValidXrayTraceId,
+  notifyUser,
+} from './scripts/util.mjs';
 
 let menuCreationPromise = null;
 
@@ -65,10 +70,23 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
 });
 
 async function menuAction(info, tab, action) {
-  const { targetUrl, fnName } = await generateUrlWithSelection(info, action);
-  if (action !== 'xray_trace') {
-    saveFunctionHistoryMenuSelect(fnName);
+  const selectionText = info.selectionText;
+
+  if (action === 'lambda_console' || action === 'lambda_logs') {
+    if (!isValidFunctionName(selectionText)) {
+      notifyUser('Error', 'Invalid Lambda function name format');
+      return;
+    }
+    saveFunctionHistoryMenuSelect(selectionText);
+  } else if (action == 'xray_trace') {
+    if (!isValidXrayTraceId(selectionText)) {
+      notifyUser('Error', 'Invalid X-Ray trace ID format');
+      return;
+    }
   }
+
+  const targetUrl = await generateUrlWithSelection(info, action);
+
   chrome.tabs.create({ url: targetUrl });
 }
 
